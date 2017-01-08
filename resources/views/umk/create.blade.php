@@ -167,7 +167,7 @@
                 sub_kegiatan: [],
                 uraian: [],
                 data_loading: false,
-                daftar_rekening_pengajuan: [],
+                rekening_pengajuan: [],
                 current_selected_sub_kegiatan: null,
                 all_data: null,
                 pejabat_pelaksana_teknis_kegiatan_id: null,
@@ -179,7 +179,7 @@
                 kegiatan_id: function(val){
                     if(val!=null){
                         data.sub_kegiatan = [];
-                        data.daftar_rekening_pengajuan = [];
+                        data.rekening_pengajuan = [];
                         data.data_loading = true;
                         data.current_selected_sub_kegiatan = null;
                         axios.get('/api/kegiatan_id/'+val)
@@ -200,7 +200,7 @@
                 request:function(){
                     request = {};
                     request.kegiatan_id = this.kegiatan_id;
-                    request.rekening_pengajuan = this.daftar_rekening_pengajuan;
+                    request.rekening_pengajuan = this.rekening_pengajuan;
                     request.pejabat_pelaksana_teknis_kegiatan_id = this.pejabat_pelaksana_teknis_kegiatan_id;
                     request.pejabat_pengadaan_barang_dan_jasa_id = this.pejabat_pengadaan_barang_dan_jasa_id;
                     request.pejabat_kuasa_pengguna_anggaran_id = this. pejabat_kuasa_pengguna_anggaran_id;
@@ -222,14 +222,14 @@
                         u.jumlah = data.number_only(u.jumlah);
                         return u;
                     });
-                    this.daftar_rekening_pengajuan.push(...uraian);
+                    this.rekening_pengajuan.push(...uraian);
                     this.uraian = [];
                 },
                 find_sub_kegiatn:function(id){
                 },
                 delete_rekening_pengajuan_item:function(index, e){
                     e.preventDefault();
-                    this.daftar_rekening_pengajuan.splice(index,1);
+                    this.rekening_pengajuan.splice(index,1);
                 },
                 number_only:function(value){
                     return value.replace(/[^0-9]/g,'');
