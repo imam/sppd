@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Dppa\Uraian_Sub_Kegiatan;
 use Illuminate\Http\Request;
 
 class UraianSubKegiatanController extends Controller
@@ -34,7 +35,8 @@ class UraianSubKegiatanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Uraian_Sub_Kegiatan::create(['uraian'=>$request->uraian,'kode_rekening'=>$request->kode_rekening]);
+        return redirect($request->ref);
     }
 
     /**
@@ -56,7 +58,7 @@ class UraianSubKegiatanController extends Controller
      */
     public function edit($id)
     {
-        //
+
     }
 
     /**
@@ -66,9 +68,10 @@ class UraianSubKegiatanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update($program_id, $kegiatan_id, $id,Request $request)
     {
-        //
+        $uraian = Uraian_Sub_Kegiatan::find($id)->update(['uraian'=>$request->uraian,'kode_rekening'=>$request->kode_rekening]);
+        return redirect($request->ref);
     }
 
     /**
@@ -77,8 +80,9 @@ class UraianSubKegiatanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($program_kode,$kegiatan_kode,$id, Request $request)
     {
-        //
+        Uraian_Sub_Kegiatan::find($id)->delete();
+        return response('Success',200);
     }
 }

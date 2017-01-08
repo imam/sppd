@@ -2,6 +2,7 @@
 
 namespace App\Dppa;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Kegiatan extends Model
@@ -11,6 +12,17 @@ class Kegiatan extends Model
     protected $fillable = ['kode','nama','program_id'];
 
     protected $appends = ['jumlah_anggaran'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('tahun_anggaran_scope',function(Builder $builder){
+            $builder->whereHas('program',function ($query){
+                $query->where('tahun_anggaran','=','2016');
+            });
+        });
+    }
 
     public function program()
     {

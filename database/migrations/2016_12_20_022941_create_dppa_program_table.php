@@ -15,6 +15,7 @@ class CreateDppaProgramTable extends Migration
     {
         Schema::create('dppa_program', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('tahun_anggaran');
             $table->string('kode');
             $table->string('nama');
             $table->timestamps();

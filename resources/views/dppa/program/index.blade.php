@@ -4,21 +4,18 @@
     <div id="root">
     <div class="clearfix">
         <div class="pull-xs-left">
-            <h2>Program</h2>
+            <h2>program</h2>
         </div>
         <div class="pull-xs-right m-t-30">
-            <a href="#" class="btn btn-primary ">Tambah Program</a>
-            <a href="/dppa/program/import" class="btn btn-primary">Impor Program</a>
-            <a href="#" class="btn btn-primary">Ekspor Program</a>
+            <a href="/dppa/program/create" class="btn btn-primary ">tambah program</a>
+            <a href="/dppa/program/import" class="btn btn-primary">impor program</a>
         </div>
     </div>
     <div id="table" >
         <table class="table table-striped" >
             <thead>
             <tr>
-                <th>Kode Program</th>
-                <th>Nama Program</th>
-                <th>Action</th>
+                @each('_table.head',['kode program','nama program','action'],'text')
             </tr>
             </thead>
             <tbody>
@@ -26,26 +23,34 @@
                     <tr>
                         <td>{{$program->kode}}</td>
                         <td><a href="/dppa/program/{{$program->kode}}">{{$program->nama}}</a></td>
-                        <th><a href="#"><i class="wb-edit"></i></a> <a href="#"><i class="wb-trash"></i></a></th>
+                        <td><a href="/dppa/program/{{$program->kode}}/edit"><i class="wb-edit"></i></a> <a href="#" onclick="deletealert('{{$program->kode}}')"><i class="wb-trash"></i></a></td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-        @if($data->lastPage() != 1)
-            <nav class="pull-xs-right">
-                <span class="sr-only">Loading...</span>
-                <ul class="pagination">
-                    <li class="page-item @if($data->previousPageUrl() == null) disabled @endif">
-                        <a class="page-link" href="{{$data->previousPageUrl()}}">
-                        <span aria-hidden="true">←</span> Previous </a>
-                    </li>
-                    <li class="page-item @if(!$data->hasMorePages()) disabled @endif">
-                        <a class="page-link" href="{{$data->nextPageUrl()}}">Next
-                        <span aria-hidden="true">→</span></a>
-                    </li>
-                </ul>
-            </nav>
-        @endif
+        @include('_table.pagination',['data'=>$data])
     </div>
     </div>
+@endsection
+
+@section('script')
+    <script>
+        function deletealert(kode){
+            alertify.confirm("anda yakin ingin menghapus item ini?",function(e) {
+                e.preventdefault();
+                $.ajax({
+                    method: 'delete',
+                    url: '/dppa/program/'+kode,
+                    headers:{
+                        'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
+                    }
+                }).done(function(){
+                    alertify.alert('success');
+                    window.location.reload();
+                }).fail(function(){
+                    alertify.alert('fail');
+                })
+            });
+        }
+    </script>
 @endsection

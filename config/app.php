@@ -180,7 +180,7 @@ return [
         \Dingo\Api\Provider\LaravelServiceProvider::class,
         \Maatwebsite\Excel\ExcelServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
-        \Torann\Currency\CurrencyServiceProvider::class,
+        \Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,
 
     ],
 
@@ -232,6 +232,7 @@ return [
         'Excel' => \Maatwebsite\Excel\Facades\Excel::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
         'Currency' => \Torann\Currency\Facades\Currency::class,
+        'Javascript'=> \Laracasts\Utilities\JavaScript\JavaScriptFacade::class
 
 
 

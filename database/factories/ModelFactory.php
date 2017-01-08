@@ -51,3 +51,19 @@ $factory->define(\App\Dppa\Uraian_Sub_Kegiatan::class,function(\Faker\Generator 
         'uraian' => $faker->sentence(7)
     ];
 });
+
+$factory->define(\App\UMK::class,function(\Faker\Generator $faker){
+    return [
+        'kegiatan_id' => \App\Dppa\Kegiatan::inRandomOrder()->first()->id,
+        'pejabat_pelaksana_teknis_kegiatan_pegawai_id' => \App\Pegawai::inRandomOrder()->first()->id,
+        'pejabat_pengadaan_barang_dan_jasa_pegawai_id' => \App\Pegawai::inRandomOrder()->first()->id,
+        'pejabat_kuasa_pengguna_anggaran_pegawai_id' => \App\Pegawai::inRandomOrder()->first()->id,
+    ];
+});
+
+$factory->define(\App\RekeningPengajuan::class,function (\Faker\Generator $faker){
+    return [
+        'uraian' => $faker->sentence(20),
+        'jumlah' => $faker->numberBetween(500000,1000000)
+    ];
+});

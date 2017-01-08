@@ -1,0 +1,1 @@
+<a href="{{$edit_url}}"><i class="wb-edit"></i></a>

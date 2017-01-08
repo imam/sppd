@@ -50,7 +50,7 @@ class KegiatanController extends Controller
     {
         $kegiatan = Kegiatan::find($id);
         $kegiatan->program;
-        $kegiatan->sub_kegiatan = $kegiatan->sub_kegiatan()->with('uraian')->paginate(2);
+        $kegiatan->sub_kegiatan = $kegiatan->sub_kegiatan()->with('uraian')->get();
         return $kegiatan;
     }
 
@@ -86,5 +86,10 @@ class KegiatanController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function show_sub_kegiatan($id)
+    {
+        return Kegiatan::find($id)->sub_kegiatan;
     }
 }

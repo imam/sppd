@@ -1,0 +1,1 @@
+<a href="#" onclick="deletealert('{{$delete_url}}')"><i class="wb-trash"></i></a>

@@ -1,7 +1,7 @@
 <?php
 /**
  * A helper file for Laravel 5, to provide autocomplete information to your IDE
- * Generated for Laravel 5.3.28 on 2016-12-22.
+ * Generated for Laravel 5.3.28 on 2017-01-06.
  *
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  * @see https://github.com/barryvdh/laravel-ide-helper
@@ -12511,6 +12511,58 @@ namespace {
         public static function offsetUnset($key){
             //Method inherited from \DebugBar\DebugBar            
             return \Barryvdh\Debugbar\LaravelDebugbar::offsetUnset($key);
+        }
+        
+    }
+
+
+    class Javascript extends \Laracasts\Utilities\JavaScript\JavaScriptFacade{
+        
+        /**
+         * Bind the given array of variables to the view.
+         *
+         * @static 
+         */
+        public static function put(){
+            return \Laracasts\Utilities\JavaScript\PHPToJavaScriptTransformer::put();
+        }
+        
+        /**
+         * Translate the array of PHP vars to
+         * the expected JavaScript syntax.
+         *
+         * @param array $vars
+         * @return array 
+         * @static 
+         */
+        public static function buildJavaScriptSyntax($vars){
+            return \Laracasts\Utilities\JavaScript\PHPToJavaScriptTransformer::buildJavaScriptSyntax($vars);
+        }
+        
+    }
+
+
+    class JavaScript extends \Laracasts\Utilities\JavaScript\JavaScriptFacade{
+        
+        /**
+         * Bind the given array of variables to the view.
+         *
+         * @static 
+         */
+        public static function put(){
+            return \Laracasts\Utilities\JavaScript\PHPToJavaScriptTransformer::put();
+        }
+        
+        /**
+         * Translate the array of PHP vars to
+         * the expected JavaScript syntax.
+         *
+         * @param array $vars
+         * @return array 
+         * @static 
+         */
+        public static function buildJavaScriptSyntax($vars){
+            return \Laracasts\Utilities\JavaScript\PHPToJavaScriptTransformer::buildJavaScriptSyntax($vars);
         }
         
     }

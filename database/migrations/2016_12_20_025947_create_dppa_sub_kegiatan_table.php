@@ -18,7 +18,8 @@ class CreateDppaSubKegiatanTable extends Migration
             $table->string('nama');
             $table->bigInteger('jumlah_anggaran');
             $table->integer('kegiatan_id');
-            $table->integer('uraian_id');
+            $table->string('kode_rekening');
+            $table->string('uraian');
             $table->timestamps();
         });
     }

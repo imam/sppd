@@ -9,6 +9,7 @@
         "barryvdh/laravel-debugbar": "^2.3",
         "barryvdh/laravel-ide-helper": "^2.2",
         "dingo/api": "1.0.x@dev",
+        "laracasts/utilities": "^2.1",
         "laravel/framework": "5.3.*",
         "maatwebsite/excel": "~2.1.0"
     },

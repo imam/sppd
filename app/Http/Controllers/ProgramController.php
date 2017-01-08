@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Dppa\Kegiatan;
 use App\DPPA\Program;
+use App\Dppa\Sub_Kegiatan;
+use App\Dppa\Uraian_Sub_Kegiatan;
 use Illuminate\Http\Request;
 
 class ProgramController extends Controller
@@ -26,7 +29,7 @@ class ProgramController extends Controller
      */
     public function create()
     {
-        //
+        return view('dppa.program.create');
     }
 
     /**
@@ -37,7 +40,9 @@ class ProgramController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Program::create(['kode'=>$request->kode,'nama'=>$request->nama]);
+        $request->session()->flash('data_created',true);
+        return redirect('/dppa/program/create');
     }
 
     /**
@@ -46,10 +51,10 @@ class ProgramController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request,$id)
     {
         $program = Program::where('kode',$id)->first();
-        $program->kegiatan = $program->kegiatan()->paginate(10);
+        if($program == null) abort(404);
         \Debugbar::info($program);
         return view('dppa.program.show',['data'=>$program]);
     }
@@ -60,31 +65,27 @@ class ProgramController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($kode, Request $request)
     {
-        //
+        $program = Program::where('kode',$kode)->first();
+        \Debugbar::info($program);
+        return view('dppa.program.edit',['data'=>$program]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int  $kode
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $kode)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $program = Program::where('kode',$kode)->first();
+        $program->kode = $request->kode;
+        $program->nama = $request->nama;
+        $program->save();
+        $request->session()->flash('program_edited',true);
+        return redirect(route('program.edit',['id'=>$kode]));
     }
 }

@@ -16,11 +16,7 @@ use Illuminate\Http\Request;
 $api = app(\Dingo\Api\Routing\Router::class);
 
 $api->version('v1',function($api){
-    $api->group(['prefix'=>'/dppa/program','middleware'=>'web'],function($api){
-        $api->get('/',App\Http\Controllers\API\DPPA\ProgramController::class.'@index');
-        $api->post('/import',\App\Http\Controllers\API\DPPA\ProgramController::class.'@store_import');
-        $api->get('/{id}',\App\Http\Controllers\API\DPPA\ProgramController::class.'@show');
-        $api->get('/kegiatan/{id}',\App\Http\Controllers\API\DPPA\KegiatanController::class.'@show');
-    });
-
+    $api->get('subkegiatan', \App\Http\Controllers\API\SubKegiatanController::class.'@index');
+    $api->get('kegiatan/{id}/subkegiatan',\App\Http\Controllers\API\DPPA\KegiatanController::class.'@show_sub_kegiatan');
+    $api->get('kegiatan/{id}',\App\Http\Controllers\API\DPPA\KegiatanController::class.'@show');
 });

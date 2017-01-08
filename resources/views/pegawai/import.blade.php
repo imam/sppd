@@ -14,15 +14,15 @@
             Data imported
         </div>
     @endif
-    <h2>Impor Program</h2>
+    <h2>Impor Pegawai</h2>
     <div class="m-t-30 m-r-20 m-b-20">
-            <a href="/dppa/program" class="btn btn-primary ">Kembali Ke Halaman Sebelumnya</a>
+        <a href="/pegawai" class="btn btn-primary ">Kembali Ke Halaman Sebelumnya</a>
     </div>
     <div class="pull-xs-left">
         <p>Jika anda ingin mengimpor program, pastikan anda mengimpornya dengan file Excel. Template untuk impor data dapat
-        diunduh dengan <a href="">mengekspor data program</a></p>
+            diunduh dengan <a href="/pegawai/export">mengekspor data pegawai</a></p>
     </div>
-    <form action="/api/dppa/program/import" method="post" enctype="multipart/form-data">
+    <form action="/pegawai/import" method="post" enctype="multipart/form-data">
         {{csrf_field()}}
         <input type="file" class="dropify" name="file"/>
         <button type="submit" class="btn btn-primary m-t-10 ">Impor</button>
