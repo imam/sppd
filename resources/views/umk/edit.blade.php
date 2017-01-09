@@ -82,22 +82,26 @@
                                 <p v-if="current_selected_sub_kegiatan!=null"><strong>Pagu Rekening:</strong> @{{ current_selected_sub_kegiatan | get_sub_kegiatan('jumlah_anggaran') | money }}</p>
                                 <p v-if="current_selected_sub_kegiatan!=null"><strong>Dana Tersedia:</strong></p>
                                 <h4 class="m-t-20">Daftar Rekening Pengajuan</h4>
-                                <div id="rekening-pengajuan-table">
-                                    <table class="table table-striped">
-                                        <thead>
-                                        <tr>
-                                            @each('_table.head',['Sub Kegiatan','Uraian','Jumlah','Action'],'text')
-                                        </tr>
-                                        </thead>
-                                        <tbody >
-                                        <tr v-for="(data,key) in rekening_pengajuan">
-                                            <td>@{{ data.sub_kegiatan | get_sub_kegiatan('nama') }}</td>
-                                            <td>@{{ data.uraian }}</td>
-                                            <td>@{{ data.jumlah | money}}</td>
-                                            <td><a href="#" v-on:click="delete_rekening_pengajuan_item(key,$event)"><i class="wb-trash"></i></a></td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                                <div  id="rekening-pengajuan-table">
+                                    <div data-role="container">
+                                        <div data-role="content">
+                                            <table class="table table-striped">
+                                            <thead>
+                                            <tr>
+                                                @each('_table.head',['Sub Kegiatan','Uraian','Jumlah','Action'],'text')
+                                            </tr>
+                                            </thead>
+                                            <tbody >
+                                            <tr v-for="(data,key) in rekening_pengajuan">
+                                                <td>@{{ data.sub_kegiatan | get_sub_kegiatan('nama') }}</td>
+                                                <td>@{{ data.uraian }}</td>
+                                                <td>@{{ data.jumlah | money}}</td>
+                                                <td><a href="#" v-on:click="delete_rekening_pengajuan_item(key,$event)"><i class="wb-trash"></i></a></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -163,7 +167,7 @@
             el: "#content",
             data: {
                 kegiatan_selected: false,
-                kegiatan_id: false,
+                kegiatan_id: umk.kegiatan_id,
                 sub_kegiatan: [],
                 uraian: [],
                 data_loading: false,
@@ -176,11 +180,21 @@
                 submit_on_progress: false
             },
             mounted:function(){
-                this.kegiatan_id = umk.kegiatan_id;
                 this.pejabat_kuasa_pengguna_anggaran_id = umk.pejabat_kuasa_pengguna_anggaran_pegawai_id;
                 this.pejabat_pengadaan_barang_dan_jasa_id = umk.pejabat_pengadaan_barang_dan_jasa_pegawai_id;
                 this.pejabat_pelaksana_teknis_kegiatan_id = umk.pejabat_pelaksana_teknis_kegiatan_pegawai_id;
-
+                this.data_loading = true;
+                axios.get('/api/kegiatan/'+this.kegiatan_id)
+                        .then(function(response){
+                            data.data_loading =false;
+                            data.all_data = response.data.dppa_kegiatan;
+                            data.sub_kegiatan =response.data.dppa_kegiatan.sub_kegiatan;
+                            data.kegiatan_selected = true;
+                            data.$nextTick(function(){
+                                $('[data-plugin=select2]').select2();
+                                this.rekening_pengajuan = umk.rekening_pengajuan;
+                            });
+                        });
             },
             watch:{
                 kegiatan_id: function(val){
@@ -207,9 +221,9 @@
                     request = {};
                     request.kegiatan_id = this.kegiatan_id;
                     request.rekening_pengajuan = this.rekening_pengajuan;
-                    request.pejabat_pelaksana_teknis_kegiatan_id = this.pejabat_pelaksana_teknis_kegiatan_id;
-                    request.pejabat_pengadaan_barang_dan_jasa_id = this.pejabat_pengadaan_barang_dan_jasa_id;
-                    request.pejabat_kuasa_pengguna_anggaran_id = this. pejabat_kuasa_pengguna_anggaran_id;
+                    request.pejabat_pelaksana_teknis_kegiatan_pegawai_id = this.pejabat_pelaksana_teknis_kegiatan_id;
+                    request.pejabat_pengadaan_barang_dan_jasa_pegawai_id = this.pejabat_pengadaan_barang_dan_jasa_id;
+                    request.pejabat_kuasa_pengguna_anggaran_pegawai_id = this. pejabat_kuasa_pengguna_anggaran_id;
                     return request;
                 }
             },
@@ -242,13 +256,14 @@
                 },
                 submit:function(){
                     this.submit_on_progress = true;
-                    axios.post('/umk', data.request).then(function(response){
+                    axios.put('/umk/'+umk.id, data.request).then(function(response){
                         notie.alert('success','Success',3)
                         console.log(response);
                         kepo = response;
                         data.submit_on_progress = false;
                     }).catch(function(){
                         notie.alert('error','Error')
+                        data.submit_on_progress = false;
                     })
                 }
             },

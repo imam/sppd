@@ -22,6 +22,10 @@
 <script src="/global/vendor/datatables-bootstrap/dataTables.bootstrap.js"></script>
 <script src="/global/vendor/datatables-responsive/dataTables.responsive.js"></script>
 <script src="/global/vendor/datatables-tabletools/dataTables.tableTools.js"></script>
+<script src="/global/vendor/asscrollable/jquery-asScrollable.min.js"></script>
+<script src="/global/vendor/asscrollbar/jquery-asScrollbar.js"></script>
+<script src="/global/vendor/ashoverscroll/jquery-asHoverScroll.js"></script>
+<script src="https://cdn.rawgit.com/alertifyjs/alertify.js/v1.0.10/dist/js/alertify.js"></script>
 <!-- Scripts -->
 <script src="/global/js/State.js"></script>
 <script src="/global/js/Component.js"></script>
@@ -35,7 +39,6 @@
 <script src="/assets/js/Plugin/menu.js"></script>
 <script src="/global/js/config/colors.js"></script>
 <script src="/assets/js/config/tour.js"></script>
-<script src="https://cdn.rawgit.com/alertifyjs/alertify.js/v1.0.10/dist/js/alertify.js"></script>
 <script>
     var csrf_token =   $('meta[name="csrf-token"]').attr('content');
 </script>
@@ -62,12 +65,6 @@
     axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf_token;
 </script>
 <script src="/assets/js/Site.js"></script>
-<script src="/global/vendor/asscrollbar/jquery-asScrollbar.min.js"></script>
-<script src="/global/js/Plugin/asscrollable.js"></script>
-<script src="/global/js/Plugin/slidepanel.js"></script>
-
-
-<script src="/global/js/Plugin/switchery.js"></script>
 
 <script>
     (function(document, window, $) {

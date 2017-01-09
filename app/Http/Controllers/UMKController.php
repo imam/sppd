@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\RekeningPengajuan;
 use JavaScript;
 use App\Dppa\Kegiatan;
 use App\DPPA\Program;
@@ -74,7 +75,7 @@ class UMKController extends Controller
         JavaScript::put([
             'umk'=>$umk
         ]);
-        return view('umk.edit',compact('kegiatan','pegawai'));
+        return view('umk.edit',compact('kegiatan','pegawai','rekening_pengajuan'));
     }
 
     /**
@@ -86,7 +87,16 @@ class UMKController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $umk = UMK::find($id);
+        $umk->update($request->all());
+        //Deleting Rekening Pengajuan
+        RekeningPengajuan::where('umk_id',$id)->each(function($rp){
+            $rp->delete();
+        });
+        foreach($request->rekening_pengajuan as $rp){
+            $umk->rekening_pengajuan()->save(new RekeningPengajuan($rp));
+        }
+        return response($request->rekening_pengajuan);
     }
 
     /**

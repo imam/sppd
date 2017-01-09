@@ -32,6 +32,9 @@
     <link rel="stylesheet" href="/global/vendor/datatables-responsive/dataTables.responsive.css">
     <link rel="stylesheet" href="/global/vendor/datatables-tabletools/datatables-tabletools.min.css">
     <link rel="stylesheet" href="/global/vendor/notie/notie.min.css">
+    <link rel="stylesheet" href="/global/vendor/slidepanel/slidePanel.css">
+    <link rel="/global/vendor/asscrollbar/jquery-asScrollbar.min.js">
+    <link rel="stylesheet" href="/global/vendor/asscrollable/asScrollable.min.css">
     @yield('head')
     <!--[if lt IE 9]>
     <script src="/global/vendor/html5shiv/html5shiv.min.js"></script>
