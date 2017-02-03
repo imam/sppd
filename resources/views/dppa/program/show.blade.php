@@ -6,34 +6,44 @@
         <div class="m-t-30">
             <a href="{{route('dppa.index')}}" class="btn btn-primary m-r-20">Ubah Program</a>
         </div>
-        <h3>Info</h3>
-        <ul>
-            <li><strong>Kode Program: </strong>{{$data->kode}}</li>
-        </ul>
-        <div class="clearfix">
-            <div class="pull-xs-left">
-                <h3>Kegiatan</h3>
+        <div class="panel panel-bordered m-t-20">
+            <div class="panel-heading">
+                <div class="panel-title">Info</div>
+            </div>
+            <div class="panel-body">
+                <ul>
+                    <li><strong>Kode Program: </strong>{{$data->kode}}</li>
+                </ul>
             </div>
         </div>
-        <table data-plugin="dataTable" class="table table-striped">
-            <thead>
-            <tr>
-                @each('_table.head',['Kode','Nama','Jumlah Anggaran','Action'],'text')
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($data->kegiatan as $kegiatan)
+        <div class="panel panel-bordered">
+            <div class="panel-heading">
+                <div class="panel-title">Kegiatan</div>
+            </div>
+            <div class="panel-body">
+                <table data-plugin="dataTable" class="table table-striped">
+                <thead>
                 <tr>
-                    <th>{{$kegiatan->kode}}</th>
-                    <th><a href="{{route('kegiatan_id',['id'=>$kegiatan->kode])}}">{{ $kegiatan->nama  }}</a></th>
-                    <th>{{ 'Rp '. number_format($kegiatan->jumlah_anggaran)}}</th>
-                    <th>
-                        @include('_crud.edit_item',['edit_url'=>route('kegiatan_id',['id'=>$kegiatan->kode])])
-                    </th>
+                    @each('_table.head',['Kode','Nama','Jumlah Anggaran','Action'],'text')
                 </tr>
-            @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                @foreach($data->kegiatan as $kegiatan)
+                    <tr>
+                        <td>{{$kegiatan->kode}}</td>
+                        <td><a href="{{route('kegiatan.show',['id'=>$kegiatan->kode])}}">{{ $kegiatan->nama  }}</a></td>
+                        <td>{{ 'Rp '. number_format($kegiatan->jumlah_anggaran)}}</td>
+                        <td>
+                            @if($kegiatan->editable && Entrust::hasRole(['admin','supervisor']))
+                                @include('_crud.edit_item',['edit_url'=>route('kegiatan.edit',['id'=>$kegiatan->kode])])
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+            </div>
+        </div>
     </div>
 @endsection
 

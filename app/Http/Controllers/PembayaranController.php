@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Dppa\Kegiatan;
+use App\Pegawai;
+use App\Pembayaran;
 use Illuminate\Http\Request;
 
 class PembayaranController extends Controller
@@ -13,7 +16,11 @@ class PembayaranController extends Controller
      */
     public function index()
     {
-        return view('pembayaran.index');
+        $pembayaran = Pembayaran::with('petugas_pembayaran','petugas_pembayaran.pegawai')->get();
+        \JavaScript::put([
+            'pembayaran' => $pembayaran
+        ]);
+        return view('pembayaran.index', compact('pembayaran'));
     }
 
     /**
@@ -21,9 +28,17 @@ class PembayaranController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('pembayaran.create');
+        $pegawai = Pegawai::active()->get();
+        $kegiatan = Kegiatan::all();
+        $oldinput = $request->session()->hasOldInput()?$request->session()->getOldInput():null;
+        \JavaScript::put([
+            'pegawai'=> $pegawai,
+            'kegiatan' => $kegiatan,
+            'oldinput' => $oldinput
+        ]);
+        return view('pembayaran.create',compact('pegawai','oldinput'));
     }
 
     /**
@@ -34,7 +49,21 @@ class PembayaranController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'kegiatan_id' => 'required',
+            'sub_kegiatan_id' => 'required',
+            'perjalanan_dinas_id' => 'required',
+            'petugas' => "required",
+            'petugas.*.petugas_id' => 'required',
+            'petugas.*.uang' => 'required|integer',
+            'petugas.*.transport' => 'required|integer',
+            'petugas.*.penginapan' => 'required|integer'
+        ]);
+        $pembayaran = Pembayaran::create($request->all());
+        foreach ($request->petugas as $p){
+            $pembayaran->petugas_pembayaran()->create($p);
+        }
+        return $request->all();
     }
 
     /**
@@ -45,7 +74,11 @@ class PembayaranController extends Controller
      */
     public function show($id)
     {
-        //
+        $pembayaran = Pembayaran::with('petugas_pembayaran.pegawai')->find($id);
+        \JavaScript::put([
+            'pembayaran'=>$pembayaran
+        ]);
+        return view('pembayaran.show', compact('pembayaran'));
     }
 
     /**
@@ -54,9 +87,22 @@ class PembayaranController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, Request $request)
     {
-        //
+        $oldinput = $request->session()->hasOldInput()?$request->session()->getOldInput():null;
+        $pegawai = Pegawai::active()->get();
+        $kegiatan = Kegiatan::all();
+        $current = Pembayaran::with(
+            'petugas_pembayaran.pegawai','perjalanan_dinas.kegiatan','perjalanan_dinas.sub_kegiatan'
+        )->find($id);
+        $oldinput = $request->session()->hasOldInput()?$request->session()->getOldInput():null;
+        \JavaScript::put([
+            'pegawai'=> $pegawai,
+            'kegiatan' => $kegiatan,
+            'current' => $current,
+            'oldinput' => $oldinput
+        ]);
+        return view('pembayaran.edit',compact('pegawai','current'));
     }
 
     /**
@@ -68,7 +114,23 @@ class PembayaranController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'kegiatan_id' => 'required',
+            'sub_kegiatan_id' => 'required',
+            'perjalanan_dinas_id' => 'required',
+            'petugas' => "required",
+            'petugas.*.petugas_id' => 'required',
+            'petugas.*.uang' => 'required|integer',
+            'petugas.*.transport' => 'required|integer',
+            'petugas.*.penginapan' => 'required|integer'
+        ]);
+        $pembayaran = Pembayaran::find($id);
+        $pembayaran->update($request->all());
+        $pembayaran->petugas_pembayaran()->delete();
+        foreach ($request->petugas as $p){
+            $pembayaran->petugas_pembayaran()->create($p);
+        }
+        return $request->all();
     }
 
     /**
@@ -79,6 +141,7 @@ class PembayaranController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Pembayaran::find($id)->delete();
+        return response('ok');
     }
 }

@@ -27,4 +27,8 @@ class Program extends Model
         return $this->hasManyThrough(Kegiatan::class, Sub_Kegiatan::class,'program_id','kegiatan_id');
     }
 
+    public function getEditableAttribute()
+    {
+        return $this->kegiatan->filter(function($u){return $u->editable;})->count() == $this->kegiatan->count();
+    }
 }

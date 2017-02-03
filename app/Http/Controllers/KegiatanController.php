@@ -25,7 +25,7 @@ class KegiatanController extends Controller
      */
     public function create($program_kode)
     {
-        return view('dppa.program.kegiatan_id.create',['program_kode'=>$program_kode]);
+        return view('dppa.program.kegiatan.create',['program_kode'=>$program_kode]);
     }
 
     /**
@@ -39,7 +39,7 @@ class KegiatanController extends Controller
         $program = Program::where('kode',$program_kode)->first();
         Kegiatan::create(['kode'=>$request->kode,'nama'=>$request->nama,'program_id'=>$program->id]);
         $request->session()->flash('data_created',true);
-        return redirect("/dppa/program/{$program_kode}/kegiatan_id/create");
+        return redirect("/dppa/program/{$program_kode}/kegiatan/create");
     }
 
     /**
@@ -54,7 +54,8 @@ class KegiatanController extends Controller
         if($kegiatan == null) abort(404);
         $kegiatan->sub_kegiatan = $kegiatan->sub_kegiatan()->paginate(10);
         \Debugbar::info($kegiatan);
-        return view('dppa.program.kegiatan_id.show',['data'=>$kegiatan,'kegiatan_kode'=>$kode]);
+        $title = $kegiatan->nama;
+        return view('dppa.program.kegiatan.show',['data'=>$kegiatan,'kegiatan_kode'=>$kode,'title'=>$title]);
     }
 
     /**
@@ -67,7 +68,8 @@ class KegiatanController extends Controller
     {
         $kegiatan = Kegiatan::where('kode',$kode)->first();
         $ref = $request->ref;
-        return view("dppa.program.kegiatan_id.edit",['data'=>$kegiatan,'ref'=>$ref]);
+        $title = $kegiatan->nama;
+        return view("dppa.program.kegiatan.edit",['data'=>$kegiatan,'ref'=>$ref,'title'=>$title]);
     }
 
     /**
@@ -81,7 +83,7 @@ class KegiatanController extends Controller
     {
         Kegiatan::where('kode',$kode)->update(['kode'=>$request->kode,'nama'=>$request->nama]);
         $request->session()->flash('data_updated',true);
-        return redirect(route('kegiatan_id.edit',['id'=>$kode]));
+        return redirect(route('kegiatan.edit',['id'=>$kode]));
     }
 
     /**

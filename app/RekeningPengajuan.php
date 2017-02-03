@@ -24,5 +24,5 @@ class RekeningPengajuan extends Model
     public function sub_kegiatan()
     {
         return $this->belongsTo(Sub_Kegiatan::class,'sub_kegiatan_id');
-    }
+}
 }

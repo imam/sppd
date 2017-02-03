@@ -6,7 +6,7 @@
 
 @section('content')
 
-    @if(Session::get('import_success')=== 'true')
+    @if(Session::get('import_success')== 'true')
         <div class="alert dark alert-primary alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">×</span>
@@ -17,10 +17,6 @@
     <h2>Impor Pegawai</h2>
     <div class="m-t-30 m-r-20 m-b-20">
         <a href="/pegawai" class="btn btn-primary ">Kembali Ke Halaman Sebelumnya</a>
-    </div>
-    <div class="pull-xs-left">
-        <p>Jika anda ingin mengimpor program, pastikan anda mengimpornya dengan file Excel. Template untuk impor data dapat
-            diunduh dengan <a href="/pegawai/export">mengekspor data pegawai</a></p>
     </div>
     <form action="/pegawai/import" method="post" enctype="multipart/form-data">
         {{csrf_field()}}

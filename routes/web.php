@@ -11,40 +11,101 @@
 |
 */
 
-Route::get('/', function () {
-    return view('home');
+Route::post('toggle_sidebar',function(\Illuminate\Http\Request $request){
+    $current = $request->session()->get('sidebar_open',false);
+    $request->session()->put('sidebar_open',!$current);
 });
 
+if(env('APP_ENV','local ')){
+    Route::get('changeuser/{user}',function($user){
+        Auth::loginUsingId($user);
+        return redirect('/');
+    });
+}
 
-Route::get('dppa/import','DPPAController@import');
-Route::post('dppa/import','DPPAController@import_store');
-Route::resource('dppa','DPPAController',[
-    'names'=>[
-    ]
-]);
-Route::resource('/program','ProgramController',[
-    'only'=>['edit','update','show']
-]);
+Route::group(['middleware'=>['install','auth']],function(){
+    Route::get('/', function () {
+        return view('home',['title'=>'Dashboard']);
+    });
 
-Route::resource('kegiatan_id','KegiatanController',[
-    'only' => ['edit','update','show'],
-]);
+    Route::get('bug',function(){
+        return view('bug');
+    });
+    Route::post('bug',function(\Illuminate\Http\Request $request){
+        Mail::to('imam@imam.tech')->send(
+            new \App\Mail\BugReporting('kepo',$request->report_content)
+        );
+        return redirect()->back();
+    });
 
-Route::resource('subkegiatan','SubKegiatanController',[
-    'only' => ['edit','update','show'],
-]);
+    Route::get('/profile','ProfileController@edit');
+    Route::post('/profile','ProfileController@update');
 
-Route::get('/pegawai/import','PegawaiController@import')->name('pegawai.import');
-Route::post('/pegawai/import','PegawaiController@store_import');
-Route::resource('pegawai','PegawaiController');
+    Route::get('ganti_tahun_anggaran',function(Illuminate\Http\Request $request){
+        $user = \App\User::find(Auth::id());
+        $user->tahun_anggaran = $request->tahun;
+        $user->save();
+        return redirect('/');
+    });
 
+    Route::group(['middleware'=>'role:admin'],function(){
 
-Route::get('umk/create/tahun/{tahun_anggaran}','UMKController@create_page_2')->name('umk.create.page_2');
-Route::get('umk/create/tahun/{tahun_anggaran}/kegiatan_id/{kegiatan_id}','UMKController@create_page_3')->name('umk.create.page_3');
-Route::resource('umk','UMKController');
-Route::resource('perjalanandinas','PerjalananDinasController');
-Route::resource('hasilperjalanandinas','HasilPerjalananDinasController');
-Route::resource('pembayaran','PembayaranController');
+        Route::post('buattahunanggaran',function(Illuminate\Http\Request $request){
+            $tahun_anggaran = \App\TahunAnggaran::create(['tahun'=>$request->tahun]);
+            return redirect()->back();
+        });
+
+        Route::get('dppa/import','DPPAController@import');
+        Route::post('dppa/import','DPPAController@import_store');
+
+        Route::get('/pegawai/import','PegawaiController@import')->name('pegawai.import');
+        Route::post('/pegawai/import','PegawaiController@store_import');
+    });
+
+    Route::group(['middleware'=>['role:admin|supervisor']],function(){
+
+        Route::resource('program','ProgramController',['except'=>['destroy']]);
+
+        Route::resource('kegiatan','KegiatanController', ['except'=>['destroy']]);
+
+        Route::resource('subkegiatan','SubKegiatanController', ['except'=>['destroy']]);
+
+        Route::resource('pegawai','PegawaiController');
+
+        Route::resource('umk','UMKController');
+
+    });
+
+    Route::resource('dppa','DPPAController',['only' => ['index']]);
+
+    Route::resource('program','ProgramController',['only' => ['index','show']]);
+
+    Route::resource('kegiatan','KegiatanController', ['only'=>['show']]);
+
+    Route::resource('subkegiatan','SubKegiatanController', ['only'=>['show']]);
+
+    Route::resource('pegawai','PegawaiController',['only' => ['index']]);
+
+    Route::resource('umk','UMKController',['except'=>'show']);
+
+    Route::resource('perjalanandinas','PerjalananDinasController',['except'=>'show']);
+
+    Route::resource('hasilperjalanandinas','HasilPerjalananDinasController',['except' => ['show']]);
+
+    Route::get('hasilperjalanandinas/download/{id}','HasilPerjalananDinasController@download')
+        ->name('hasilperjalanandinas.download');
+
+    Route::resource('transaksiperjalanandinas','TransaksiPerjalananDinasController',['except' => ['show']]);
+
+    Route::resource('pembayaran','PembayaranController',['except' => ['show']]);
+});
 
 Auth::routes();
+
+Route::get('/install','InstallationController@get');
+
+Route::post('firstsignup','InstallationController@signup');
+
+
+
 

@@ -48,14 +48,12 @@ class KegiatanController extends Controller
      */
     public function show($id)
     {
-        $kegiatan = Kegiatan::find($id);
-        $kegiatan->program;
-        $kegiatan->sub_kegiatan = $kegiatan->sub_kegiatan()->with('uraian')->get();
+        $kegiatan = Kegiatan::with('program','sub_kegiatan','sub_kegiatan.uraian','sub_kegiatan.perjalanan_dinas')->find($id);
         return $kegiatan;
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified resource
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response

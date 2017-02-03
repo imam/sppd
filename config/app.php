@@ -162,6 +162,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        Watson\Active\ActiveServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -181,6 +182,7 @@ return [
         \Maatwebsite\Excel\ExcelServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         \Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,
+        Zizaco\Entrust\EntrustServiceProvider::class,
 
     ],
 
@@ -231,10 +233,9 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => \Maatwebsite\Excel\Facades\Excel::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
-        'Currency' => \Torann\Currency\Facades\Currency::class,
-        'Javascript'=> \Laracasts\Utilities\JavaScript\JavaScriptFacade::class
-
-
+        'Javascript'=> \Laracasts\Utilities\JavaScript\JavaScriptFacade::class,
+        'Active' => Watson\Active\Facades\Active::class,
+        'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
 
     ],
 

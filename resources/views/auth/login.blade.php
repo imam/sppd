@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html class="no-js css-menubar" lang="en">
 <head>
@@ -26,12 +27,12 @@
     <link rel="stylesheet" href="/global/fonts/brand-icons/brand-icons.min.css">
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,300italic'>
     <!--[if lt IE 9]>
-      <script src="/global/vendor/html5shiv/html5shiv.min.js"></script>
-      <![endif]-->
+    <script src="/global/vendor/html5shiv/html5shiv.min.js"></script>
+    <![endif]-->
     <!--[if lt IE 10]>
-      <script src="/global/vendor/media-match/media.match.min.js"></script>
-      <script src="/global/vendor/respond/respond.min.js"></script>
-      <![endif]-->
+    <script src="/global/vendor/media-match/media.match.min.js"></script>
+    <script src="/global/vendor/respond/respond.min.js"></script>
+    <![endif]-->
     <!-- Scripts -->
     <script src="/global/vendor/breakpoints/breakpoints.js"></script>
     <script>
@@ -40,18 +41,27 @@
 </head>
 <body class="animsition page-login-v3 layout-full">
 <!--[if lt IE 8]>
-      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-  <![endif]-->
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
 <!-- Page -->
 <div class="page vertical-align text-xs-center" data-animsition-in="fade-in" data-animsition-out="fade-out">>
     <div class="page-content vertical-align-middle animation-slide-top animation-duration-1">
         <div class="panel">
             <div class="panel-body">
                 <div class="brand">
-                    <img class="brand-img" src="/assets//images/logo-blue.png" alt="...">
-                    <h2 class="brand-text font-size-18">Remark</h2>
+                    <h2 class="brand-text font-size-18">SPPD</h2>
                 </div>
-                <form method="post" action="#">
+                <form method="post" action="{{route('login')}}">
+                    {{csrf_field()}}
+                    @if (count($errors) > 0)
+                        <div class="alert alert-danger" style="text-align:left">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <div class="form-group form-material floating" data-plugin="formMaterial">
                         <input type="email" class="form-control" name="email" />
                         <label class="floating-label">Email</label>
@@ -65,27 +75,14 @@
                             <input type="checkbox" id="inputCheckbox" name="remember">
                             <label for="inputCheckbox">Remember me</label>
                         </div>
-                        <a class="pull-xs-right" href="forgot-password.html">Forgot password?</a>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block btn-lg m-t-40">Sign in</button>
                 </form>
-                <p>Still no account? Please go to <a href="/register">Sign up</a></p>
             </div>
         </div>
         <footer class="page-copyright page-copyright-inverse">
-            <p>WEBSITE BY Imam.tech</p>
-            <p>© 2016. All RIGHT RESERVED.</p>
-            <div class="social">
-                <a class="btn btn-icon btn-pure" href="javascript:void(0)">
-                    <i class="icon bd-twitter" aria-hidden="true"></i>
-                </a>
-                <a class="btn btn-icon btn-pure" href="javascript:void(0)">
-                    <i class="icon bd-facebook" aria-hidden="true"></i>
-                </a>
-                <a class="btn btn-icon btn-pure" href="javascript:void(0)">
-                    <i class="icon bd-google-plus" aria-hidden="true"></i>
-                </a>
-            </div>
+            <p>WEBSITE BY <a href="http://imam.tech">Imam Assidiqqi</a></p>
+            <p>© {{\Carbon\Carbon::now()->year}}. All RIGHT RESERVED.</p>
         </footer>
     </div>
 </div>
@@ -120,7 +117,7 @@
 <script src="/global/js/config/colors.js"></script>
 <script src="/assets/js/config/tour.js"></script>
 <script>
-    Config.set('assets', '../../assets');
+    Config.set('assets', '/assets');
 </script>
 <!-- Page -->
 <script src="/assets/js/Site.js"></script>

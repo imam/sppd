@@ -56,7 +56,8 @@ class ProgramController extends Controller
         $program = Program::where('kode',$id)->first();
         if($program == null) abort(404);
         \Debugbar::info($program);
-        return view('dppa.program.show',['data'=>$program]);
+        $title = $program->nama;
+        return view('dppa.program.show',['data'=>$program,'title'=>$title]);
     }
 
     /**
@@ -81,6 +82,10 @@ class ProgramController extends Controller
      */
     public function update(Request $request, $kode)
     {
+        $this->validate($request, [
+            'kode' => 'required',
+            'nama' => 'required'
+        ]);
         $program = Program::where('kode',$kode)->first();
         $program->kode = $request->kode;
         $program->nama = $request->nama;

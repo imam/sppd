@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Dppa\Kegiatan;
+use App\HasilPerjalananDinas;
+use App\Pegawai;
 use Illuminate\Http\Request;
 
 class HasilPerjalananDinasController extends Controller
@@ -13,7 +16,7 @@ class HasilPerjalananDinasController extends Controller
      */
     public function index()
     {
-        return view('hasilperjalanandinas.index');
+        return view('hasilperjalanandinas.index',['hasilperjalanandinas'=>HasilPerjalananDinas::all()]);
     }
 
     /**
@@ -21,9 +24,17 @@ class HasilPerjalananDinasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('hasilperjalanandinas.create');
+        $pegawai = Pegawai::active()->get();
+        $kegiatan = Kegiatan::all();
+        $oldinput = $request->session()->hasOldInput()?$request->session()->getOldInput():null;
+        \JavaScript::put([
+            'pegawai'=> $pegawai,
+            'kegiatan' => $kegiatan,
+            'oldinput' => $oldinput
+        ]);
+        return view('hasilperjalanandinas.create',compact('pegawai','oldinput'));
     }
 
     /**
@@ -34,7 +45,21 @@ class HasilPerjalananDinasController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'perjalanan_dinas_id' => 'required'
+        ]);
+        if($request->file){
+            $filepath = $request->file('file')->store('file');
+        }else{
+            $filepath = '';
+        }
+        HasilPerjalananDinas::create([
+            'hasil' => $request->hasil,
+            'file' => $filepath,
+            'perjalanan_dinas_id' => $request->perjalanan_dinas_id
+        ]);
+        $request->session()->flash('data_created',true);
+        return redirect(route('hasilperjalanandinas.create'));
     }
 
     /**
@@ -51,12 +76,23 @@ class HasilPerjalananDinasController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, Request $request)
     {
-        //
+        $pegawai = Pegawai::get();
+        $kegiatan = Kegiatan::all();
+        $oldinput = $request->session()->hasOldInput()?$request->session()->getOldInput():null;
+        $hasilperjalanandinas = HasilPerjalananDinas::with('perjalanan_dinas.kegiatan','perjalanan_dinas.sub_kegiatan')->find($id);
+        \JavaScript::put([
+            'pegawai'=> $pegawai,
+            'kegiatan' => $kegiatan,
+            'oldinput' => $oldinput,
+            'current' => $hasilperjalanandinas
+        ]);
+        return view('hasilperjalanandinas.edit',compact('pegawai','oldinput','hasilperjalanandinas'));
     }
 
     /**
@@ -68,7 +104,18 @@ class HasilPerjalananDinasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request,[
+            'perjalanan_dinas_id' => 'required'
+        ]);
+        $hasilperjalanandinas = HasilPerjalananDinas::find($id);
+        if($request->file){
+            $file = $request->file('file')->store('file');
+            $hasilperjalanandinas->file = $file;
+        }
+        $hasilperjalanandinas->update($request->all());
+        $hasilperjalanandinas->save();
+        $request->session()->flash('data_updated',true);
+        return redirect(route('hasilperjalanandinas.edit',['id'=>$id]));
     }
 
     /**
@@ -79,6 +126,13 @@ class HasilPerjalananDinasController extends Controller
      */
     public function destroy($id)
     {
-        //
+        HasilPerjalananDinas::destroy($id);
+        return response('ok');
+    }
+
+    public function download($id)
+    {
+        $filepath = public_path().'/../storage/app/'.HasilPerjalananDinas::find($id)->file;
+        return response()->download($filepath,'download.'.pathinfo($filepath)['extension']);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Dppa;
 
+use App\Scopes\ProgramTahunAnggaranScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,12 +17,7 @@ class Kegiatan extends Model
     protected static function boot()
     {
         parent::boot();
-
-        static::addGlobalScope('tahun_anggaran_scope',function(Builder $builder){
-            $builder->whereHas('program',function ($query){
-                $query->where('tahun_anggaran','=','2016');
-            });
-        });
+        static::addGlobalScope(new ProgramTahunAnggaranScope());
     }
 
     public function program()
@@ -41,5 +37,10 @@ class Kegiatan extends Model
             $jumlah_anggaran[] = $sub_kegiatan->jumlah_anggaran;
         }
         return array_sum($jumlah_anggaran);
+    }
+
+    public function getEditableAttribute()
+    {
+        return $this->sub_kegiatan->filter(function($u){return $u->editable;})->count() == $this->sub_kegiatan->count();
     }
 }

@@ -19,7 +19,8 @@ class DPPAController extends Controller
     public function index(Request $request)
     {
         $data = Program::all();
-        return view('dppa.show',compact('data','tahun_anggaran'));
+        $title = 'DPPA';
+        return view('dppa.show',compact('data','tahun_anggaran','title'));
     }
 
     /**
@@ -105,7 +106,8 @@ class DPPAController extends Controller
             'file'=>'required|file'
         ]);
         $path = $request->file('file')->store('file');
-        $this->import_file($path, 2016);
+        $tahun_anggaran = \Auth::check()?\Auth::user()->tahun_anggaran:2016;
+        $this->import_file($path, $tahun_anggaran);
         \Storage::delete($path);
         $request->session()->flash('import_success',true);
         return redirect('dppa/import');

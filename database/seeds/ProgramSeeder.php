@@ -16,7 +16,7 @@ class ProgramSeeder extends Seeder
     public function run()
     {
         $dppa = new \App\Http\Controllers\DPPAController;
-        $dppa->import_file('file/00001_DPA_v3.xlsx',2016);
+        $dppa->import_file('file/00001_DPA_v3.xlsx',2017);
         $pegawai = new \App\Http\Controllers\PegawaiController();
         $pegawai->import_file('file/00001_PEGAWAI_2015.xlsx');
     }

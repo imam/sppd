@@ -20,7 +20,7 @@ class RedirectIfAuthenticated
         if (Auth::guard($guard)->check()) {
             return redirect('/home');
         }
-
+        $request->session()->put('sidebar_open',true);
         return $next($request);
     }
 }

@@ -7,14 +7,9 @@
             <a href="{{route('umk.index')}}" class="btn btn-primary ">Kembali Ke Halaman Sebelumnya</a>
         </div>
         <div>
-            <div class="alert dark alert-danger alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-                Error:
-                <ul>
-                    <li>Halo</li>
-                    <li>Kepo</li>
+            <div v-if="errors" class="alert alert-danger" style="text-align:left">
+                <ul v-for="error in errors">
+                    <li>@{{ error }}</li>
                 </ul>
             </div>
             <div class="panel panel-bordered">
@@ -177,7 +172,8 @@
                 pejabat_pelaksana_teknis_kegiatan_id: null,
                 pejabat_pengadaan_barang_dan_jasa_id:null,
                 pejabat_kuasa_pengguna_anggaran_id: null,
-                submit_on_progress: false
+                submit_on_progress: false,
+                errors: null
             },
             mounted:function(){
                 this.pejabat_kuasa_pengguna_anggaran_id = umk.pejabat_kuasa_pengguna_anggaran_pegawai_id;
@@ -256,14 +252,19 @@
                 },
                 submit:function(){
                     this.submit_on_progress = true;
+                    data.errors =null;
                     axios.put('/umk/'+umk.id, data.request).then(function(response){
                         notie.alert('success','Success',3)
                         console.log(response);
+                        data.submit_on_progress = false;
+                        kepo =response;
+                        window.location.reload();
+                    }).catch(function(response){
+                        notie.alert('error','Error');
+                        data.submit_on_progress = false;
                         kepo = response;
-                        data.submit_on_progress = false;
-                    }).catch(function(){
-                        notie.alert('error','Error')
-                        data.submit_on_progress = false;
+                        data.errors = kepo.response.data;
+                        console.log(response);
                     })
                 }
             },

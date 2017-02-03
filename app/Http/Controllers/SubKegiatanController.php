@@ -15,7 +15,7 @@ class SubKegiatanController extends Controller
      */
     public function index($program_id, $kegiatan_id)
     {
-        return response()->redirectTo("/dppa/program/$program_id/kegiatan_id/$kegiatan_id");
+        return response()->redirectTo("/dppa/program/$program_id/kegiatan/$kegiatan_id");
     }
 
     /**
@@ -26,7 +26,7 @@ class SubKegiatanController extends Controller
     public function create($program_kode,$kegiatan_kode)
     {
         $uraian = Uraian_Sub_Kegiatan::all();
-        return view('dppa.program.kegiatan_id.subkegiatan.create',compact('program_kode','kegiatan_kode','uraian'));
+        return view('dppa.program.kegiatan.subkegiatan.create',compact('program_kode','kegiatan_kode','uraian'));
     }
 
     /**
@@ -40,7 +40,7 @@ class SubKegiatanController extends Controller
         Sub_Kegiatan::create(['nama'=>$request->nama,'jumlah_anggaran'=>$request->jumlah_anggaran,
             'kegiatan_id'=>$request->kegiatan_id,'uraian_id'=>$request->uraian_id]);
         $request->session()->flash('data_created',true);
-        return redirect("/dppa/program/$program_kode/kegiatan_id/$kegiatan_kode/subkegiatan/create");
+        return redirect("/dppa/program/$program_kode/kegiatan/$kegiatan_kode/subkegiatan/create");
     }
 
     /**
@@ -64,7 +64,7 @@ class SubKegiatanController extends Controller
     {
         $sub_kegiatan = Sub_Kegiatan::find($sub_kegiatan_id);
         $uraian = Uraian_Sub_Kegiatan::all();
-        return view('dppa.program.kegiatan_id.subkegiatan.edit',compact('uraian','sub_kegiatan','sub_kegiatan_id'));
+        return view('dppa.program.kegiatan.subkegiatan.edit',compact('uraian','sub_kegiatan','sub_kegiatan_id'));
     }
 
     /**

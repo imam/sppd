@@ -4,10 +4,15 @@ namespace App\Http\Controllers;
 
 use App\DPPA\Program;
 use App\Pegawai;
+use App\Role;
+use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PegawaiController extends Controller
 {
+
+
     /**
      * Display a listing of the resource.
      *
@@ -38,7 +43,15 @@ class PegawaiController extends Controller
      */
     public function store(Request $request)
     {
-        Pegawai::create([
+        $this->validate($request, [
+            'nama' => 'required',
+            'jabatan'=> 'required',
+            'status' => 'required',
+            'email'=> 'email|unique:users,email',
+            'password' => 'required_with:email',
+            'role' => 'required_with:email'
+        ]);
+        $pegawai = Pegawai::create([
             'nama'=>$request->nama,
             'nip'=>$request->nip,
             'jabatan'=>$request->jabatan,
@@ -46,6 +59,17 @@ class PegawaiController extends Controller
             'pangkat' =>$request->pangkat,
             'npwp' =>$request->npwp
         ]);
+        if($request->email){
+            $user = User::create([
+                'name'=>$request->nama,
+                'email'=>$request->email,
+                'password'=>bcrypt($request->password),
+            ]);
+            $pegawai->user_id = $user->id;
+            $pegawai->save();
+            $role = Role::where('name',$request->role)->first();
+            $pegawai->user->attachRole($role);
+        }
         $request->session()->flash('data_created',true);
         return redirect('/pegawai/create');
     }
@@ -67,9 +91,14 @@ class PegawaiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, Request $request)
     {
-        $pegawai = Pegawai::find($id);
+        $pegawai = Pegawai::with('user.roles')->find($id);
+        $old =  $request->session()->hasOldInput()?$request->session()->getOldInput():null;
+        \Javascript::put([
+            'pegawai' => $pegawai,
+            'old' => $old
+        ]);
         return view('pegawai.edit',compact(['pegawai']));
     }
 
@@ -82,7 +111,29 @@ class PegawaiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        Pegawai::find($id)->update([
+        $pegawai = Pegawai::find($id);
+        $validator = \Validator::make($request->all(),[
+            'nama' => 'required',
+            'jabatan'=> 'required',
+            'status' => 'required',
+            'email'=> 'email',
+            'role' => 'required_with:email'
+        ]);
+        $validator->sometimes('email','unique:users,email',function($input)use($pegawai){
+            if(!$pegawai->user) return true;
+            if($pegawai->user->email != $input->email) return true;
+            return false;
+        });
+        $validator->sometimes('password','required_with:email',function($input)use($pegawai){
+            if(!$pegawai->user) return true;
+            return false;
+        });
+        if ($validator->fails()) {
+            return redirect(route('pegawai.edit',['id'=>$id]))
+                ->withErrors($validator)
+                ->withInput();
+        }
+        $pegawai->update([
             'nama'=>$request->nama,
             'nip'=>$request->nip,
             'jabatan'=>$request->jabatan,
@@ -91,6 +142,28 @@ class PegawaiController extends Controller
             'npwp' =>$request->npwp
         ]);
         $request->session()->flash('data_updated',true);
+        $user_update_array = [
+            'name'=> $request->nama,
+            'email'=>$request->email,
+        ];
+        if($request->password){
+            $user_update_array =  array_merge($user_update_array,['password'=>bcrypt($request->password)]);
+        }
+        if($request->email){
+            if($pegawai->user){
+                $pegawai->user->update($user_update_array);
+                $pegawai->user->roles()->detach();
+            }else{
+                $user = User::create($user_update_array);
+                $pegawai->user()->associate($user);
+                $pegawai->save();
+            }
+            $role = Role::where('name',$request->role)->first();
+            $pegawai->user->attachRole($role);
+        }else{
+            $pegawai->user()->dissociate();
+            $pegawai->save();
+        }
         return redirect(route('pegawai.edit',['id'=>$id]));
     }
 
@@ -102,6 +175,10 @@ class PegawaiController extends Controller
      */
     public function destroy($id)
     {
+        $pegawai = Pegawai::find($id);
+        if($pegawai->user){
+            $pegawai->user()->delete();
+        }
         Pegawai::find($id)->delete();
         return response('Ok',200);
     }

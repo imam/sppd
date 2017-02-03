@@ -21,6 +21,15 @@ class UMKController extends Controller
     public function index()
     {
         $umk = UMK::all();
+        Javascript::put([
+            'umk' => UMK::with(
+                'rekening_pengajuan',
+                'rekening_pengajuan.sub_kegiatan',
+                'pejabat_pelaksana_teknis_kegiatan_pegawai',
+                'pejabat_pengadaan_barang_dan_jasa_pegawai',
+                'pejabat_kuasa_pengguna_anggaran_pegawai'
+            )->get()
+        ]);
         return view('umk.index',compact('umk'));
     }
 
@@ -32,7 +41,7 @@ class UMKController extends Controller
     public function create(Request $request)
     {
         $kegiatan = Kegiatan::all();
-        $pegawai = Pegawai::all();
+        $pegawai = Pegawai::active()->get();
         return view('umk.create',compact('kegiatan','pegawai'));
     }
 
@@ -44,7 +53,23 @@ class UMKController extends Controller
      */
     public function store(Request $request)
     {
-        return response($request->all(),200);
+        $validator = \Validator::make($request->all(), [
+            'kegiatan_id' => 'required',
+            'rekening_pengajuan' => 'required',
+            'rekening_pengajuan.*.sub_kegiatan_id' => 'required',
+            'rekening_pengajuan.*.jumlah' => 'required',
+            'pejabat_kuasa_pengguna_anggaran_pegawai_id' => 'required',
+            'pejabat_pelaksana_teknis_kegiatan_pegawai_id' => 'required',
+            'pejabat_pengadaan_barang_dan_jasa_pegawai_id' => 'required'
+        ]);
+        if($validator->fails()){
+            return response(collect($validator->errors())->flatten(),422);
+        }
+        $umk = UMK::create($request->all());
+        foreach($request->rekening_pengajuan as $rp){
+            $umk->rekening_pengajuan()->save(new RekeningPengajuan($rp));
+        }
+        return response($umk);
     }
 
     /**
@@ -67,7 +92,7 @@ class UMKController extends Controller
     public function edit($id)
     {
         $kegiatan = Kegiatan::all();
-        $pegawai = Pegawai::all();
+        $pegawai = Pegawai::active()->get();
         $umk = UMK::with('rekening_pengajuan')->find($id);
         foreach($umk->rekening_pengajuan as $key=> $value){
             $umk->rekening_pengajuan[$key]->sub_kegiatan = $value->sub_kegiatan_id;
@@ -87,16 +112,27 @@ class UMKController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $validator = \Validator::make($request->all(), [
+            'kegiatan_id' => 'required',
+            'rekening_pengajuan' => 'required',
+            'rekening_pengajuan.*.sub_kegiatan_id' => 'required',
+            'rekening_pengajuan.*.jumlah' => 'required',
+            'pejabat_kuasa_pengguna_anggaran_pegawai_id' => 'required',
+            'pejabat_pelaksana_teknis_kegiatan_pegawai_id' => 'required',
+            'pejabat_pengadaan_barang_dan_jasa_pegawai_id' => 'required'
+        ]);
+        if($validator->fails()){
+            return response(collect($validator->errors())->flatten(),422);
+        }
         $umk = UMK::find($id);
         $umk->update($request->all());
-        //Deleting Rekening Pengajuan
         RekeningPengajuan::where('umk_id',$id)->each(function($rp){
             $rp->delete();
         });
         foreach($request->rekening_pengajuan as $rp){
             $umk->rekening_pengajuan()->save(new RekeningPengajuan($rp));
         }
-        return response($request->rekening_pengajuan);
+        return response($umk);
     }
 
     /**
@@ -107,6 +143,7 @@ class UMKController extends Controller
      */
     public function destroy($id)
     {
-        //
+        UMK::find($id)->delete();
+        return response('ok',200);
     }
 }

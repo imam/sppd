@@ -3,12 +3,13 @@ function deletealert(url){
         e.preventDefault();
         $.ajax({
             method: 'DELETE',
-            url: url,
+            url: url
         }).done(function(){
             alertify.alert('success');
             window.location.reload();
-        }).fail(function(){
+        }).fail(function(response){
             alertify.alert('fail');
+            console.log(response.data);
         })
     });
 }

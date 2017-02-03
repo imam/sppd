@@ -2,9 +2,11 @@
 
 namespace App\Scopes;
 
+use Auth;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class TahunAnggaranScope implements  Scope
 {
@@ -18,6 +20,7 @@ class TahunAnggaranScope implements  Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->where('tahun_anggaran','=',2016);
+        $tahun = Auth::check()?Auth::user()->tahun_anggaran:'2017';
+        $builder->where('tahun_anggaran','=',$tahun);
     }
 }

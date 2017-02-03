@@ -26,6 +26,8 @@
 <script src="/global/vendor/asscrollbar/jquery-asScrollbar.js"></script>
 <script src="/global/vendor/ashoverscroll/jquery-asHoverScroll.js"></script>
 <script src="https://cdn.rawgit.com/alertifyjs/alertify.js/v1.0.10/dist/js/alertify.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
+<script src="/global/vendor/summernote/summernote.min.js"></script>
 <!-- Scripts -->
 <script src="/global/js/State.js"></script>
 <script src="/global/js/Component.js"></script>
@@ -39,6 +41,20 @@
 <script src="/assets/js/Plugin/menu.js"></script>
 <script src="/global/js/config/colors.js"></script>
 <script src="/assets/js/config/tour.js"></script>
+<script type="text/x-template" id="select2-template">
+    <select class="form-control" data-plugin="select2"
+            :data-placeholder="placeholder" style="width: 100%">
+        <option value=""></option>
+        <slot></slot>
+    </select>
+</script>
+<script type="text/x-template" id="input_text">
+    <input type="text" class="form-control" :placeholder="placeholder" style="text-align:left">
+</script>
+<script type="text/x-template" id="datepicker">
+    <input type="text" :placeholder="placeholder" data-plugin="datepicker" class="form-control" data-format="dd/mm/yyyy">
+</script>
+
 <script>
     var csrf_token =   $('meta[name="csrf-token"]').attr('content');
 </script>
@@ -80,4 +96,31 @@
     })(document, window, jQuery);
 </script>
 <script src="/js/select2-vuejs.js"></script>
+<script>
+    function toggleFooter(){
+        axios.post('/toggle_sidebar');
+    }
+    Vue.component('input_text',{
+        template:'#input_text',
+        props:['placeholder'],
+        mounted:function(){
+            var vm= this;
+            $(this.$el)
+                    .on('change',function(e){
+                        vm.$emit('input',e.target.value)
+                    })
+        }
+    });
+    Vue.component('datepicker',{
+        template:'#datepicker',
+        props:['placeholder'],
+        mounted:function() {
+            var vm = this;
+            $(this.$el)
+                    .on('change', function (e) {
+                        vm.$emit('input', e.target.value)
+                    })
+        }
+    });
+</script>
 @yield('script')
